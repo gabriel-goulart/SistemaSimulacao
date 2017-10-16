@@ -1,13 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package InterfaceGrafica;
+/**
+* import das libs utilizadas
+*/
 import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+
+/**
+ * import das classes utilizadas
+ */
+import Simulacao.SimuladorControle;
 /**
  *
  * @author gabrielgoulart
@@ -16,13 +20,15 @@ public class InterfaceGrafica {
     
     private JFrame framePrincipal;
     private TelaInicial painelInicial;
-    public InterfaceGrafica(){
-        
+    private SimuladorControle simuladorControle;
+    
+    public InterfaceGrafica(SimuladorControle sc){
+        this.simuladorControle = sc;
     }
     
     public void start(){
         this.framePrincipal = new JFrame("Simulação");
-        this.framePrincipal.setSize(300, 300);
+        this.framePrincipal.setSize(600, 600);
         this.carregaTelaInicial();
         this.framePrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //this.framePrincipal.pack();
