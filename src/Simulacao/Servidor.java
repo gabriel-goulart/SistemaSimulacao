@@ -5,6 +5,8 @@
  */
 package Simulacao;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author gabrielgoulart
@@ -13,7 +15,8 @@ public class Servidor {
     
     private int tipo;
     private boolean ocupado;
-    private Entidade entidade;
+    private Entidade entidadeEmExecucao;
+    private ArrayList<Entidade> fila;
     public Servidor(int tipo){
         this.tipo = tipo;
     }
@@ -22,9 +25,11 @@ public class Servidor {
         
         if(!this.ocupado){
             this.ocupado = true;
-            this.entidade = ent;
+            this.entidadeEmExecucao = ent;
+            if(!this.fila.isEmpty()) this.fila.remove(0);
            return true; 
         }else{
+            this.fila.add(ent);
            return false; 
         }
     }
@@ -35,6 +40,14 @@ public class Servidor {
     }
     
     public Entidade getEntidade(){
-        return this.entidade;
+        return this.entidadeEmExecucao;
+    }
+    
+    public double getTempoUltimoFila(){
+        if(this.fila.isEmpty()){
+            return this.entidadeEmExecucao.getTempoSaida();
+        }else{
+            return this.fila.get(this.fila.size()-1).getTempoSaida();
+        }
     }
 }

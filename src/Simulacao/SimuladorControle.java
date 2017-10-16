@@ -66,7 +66,7 @@ public class SimuladorControle {
                                     this.gerarEvento("Saida", tempoSaida , evento.getEntidade());
                                 }else{
                                     // servidor está ocupado
-                                    tempoInicio = this.servidores[evento.getEntidade().getTipo()].getEntidade().getTempoSaida() + tempoServico;
+                                    tempoInicio = this.servidores[evento.getEntidade().getTipo()].getTempoUltimoFila() + tempoServico;
                                     evento.getEntidade().setTempoInicio(tempoInicio);
                                     this.gerarEvento("Fila", tempoInicio , evento.getEntidade());
                                 }
