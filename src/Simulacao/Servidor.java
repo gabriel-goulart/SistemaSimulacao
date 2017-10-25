@@ -19,17 +19,18 @@ public class Servidor {
     private ArrayList<Entidade> fila;
     public Servidor(int tipo){
         this.tipo = tipo;
+        this.ocupado = false;
+        this.fila = new ArrayList();
     }
     
     public boolean executa(Entidade ent){
         
         if(!this.ocupado){
             this.ocupado = true;
-            this.entidadeEmExecucao = ent;
-            if(!this.fila.isEmpty()) this.fila.remove(0);
+            this.entidadeEmExecucao = ent;            
+            if(!this.fila.isEmpty()) {this.fila.remove(0); System.out.println("Removeu entidade da fila");}
            return true; 
-        }else{
-            this.fila.add(ent);
+        }else{            
            return false; 
         }
     }
@@ -43,11 +44,18 @@ public class Servidor {
         return this.entidadeEmExecucao;
     }
     
-    public double getTempoUltimoFila(){
+    public double getTempoUltimoFila(Entidade ent){
+        System.out.println("Tamanho fila :"+ this.fila.size());
         if(this.fila.isEmpty()){
-            return this.entidadeEmExecucao.getTempoSaida();
+            System.out.println("Fila vazia "+this.entidadeEmExecucao.getTempoSaida());
+            double valor = this.entidadeEmExecucao.getTempoSaida();
+            this.fila.add(ent);
+            return valor;
         }else{
-            return this.fila.get(this.fila.size()-1).getTempoSaida();
+            System.out.println("Fila com entidade "+this.fila.get(this.fila.size()-1).getTempoSaida());
+            double valor = this.fila.get(this.fila.size()-1).getTempoSaida();
+            this.fila.add(ent);
+            return valor;
         }
     }
 }

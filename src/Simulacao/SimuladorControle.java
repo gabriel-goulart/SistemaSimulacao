@@ -4,7 +4,7 @@ package Simulacao;
  * Import das libs utilizadas
  */
 import java.util.ArrayList;
-
+import java.util.Random;
 /**
  * import das classes utilizadas 
  */
@@ -27,12 +27,13 @@ public class SimuladorControle {
         this.servidores[0] = new Servidor(1);
         this.servidores[1] = new Servidor(2);
         this.tempoSistema = 0;
-        this.tempoDeSimulacao = 0;
+        this.tempoDeSimulacao = 1000;
     }
     
     public void start(){
-        this.interfaceGrafica = new InterfaceGrafica(this);
-        this.interfaceGrafica.start();
+       // this.interfaceGrafica = new InterfaceGrafica(this);
+       // this.interfaceGrafica.start();
+       this.startSimulacao();
     }
     
     public void startSimulacao(){
@@ -50,8 +51,7 @@ public class SimuladorControle {
         while(this.tempoSistema <= this.tempoDeSimulacao)
         {
             Evento evento = this.pegarEvento();
-            this.tempoSistema = evento.getTempo();
-            
+            this.tempoSistema = evento.getTempo();            
             switch(evento.getTipo()){
                 
                 case "Entrada" : //entrada no sistema
@@ -59,38 +59,41 @@ public class SimuladorControle {
                                 evento.getEntidade().setTempoServico(tempoServico);
                                 // tentar executar no servidor
                                 
-                                if(this.servidores[evento.getEntidade().getTipo()].executa(evento.getEntidade())){
+                                if(this.servidores[evento.getEntidade().getTipo() -1].executa(evento.getEntidade())){
                                     // servidor não está ocupado 
                                     tempoSaida = this.tempoSistema + tempoServico;
                                     evento.getEntidade().setTempoSaida(tempoSaida);
                                     this.gerarEvento("Saida", tempoSaida , evento.getEntidade());
                                 }else{
                                     // servidor está ocupado
-                                    tempoInicio = this.servidores[evento.getEntidade().getTipo()].getTempoUltimoFila() + tempoServico;
+                                    tempoInicio = this.servidores[evento.getEntidade().getTipo() -1].getTempoUltimoFila(evento.getEntidade()); //+ tempoServico;
+                                    evento.getEntidade().setTempoServico(tempoInicio + tempoServico);
                                     evento.getEntidade().setTempoInicio(tempoInicio);
-                                    this.gerarEvento("Fila", tempoInicio , evento.getEntidade());
+                                    evento.getEntidade().setTempoSaida(tempoInicio + tempoServico);
+                                    this.gerarEvento("Fila", tempoInicio , evento.getEntidade());                                    
                                 }
                                 
                                 //gerar nova entrada
                                 Entidade ent = this.gerarEntidade(evento.getEntidade().getTipo());
-                                tempoChegada = this.gerarTEC(ent.getTipo());
+                                tempoChegada = this.gerarTEC(ent.getTipo()) + this.tempoSistema;
                                 this.gerarEvento("Entrada",tempoChegada , ent);
                                 ent.setTempoChegada(tempoChegada);
                                 
                                 break;
                                 
                 case "Saida" : //saida do sistema
-                                this.servidores[evento.getEntidade().getTipo()].setOcupado(false);
+                                this.servidores[evento.getEntidade().getTipo() -1].setOcupado(false);
                                 break;
                 
                 case "Fila"  : // evento na fila
-                                this.servidores[evento.getEntidade().getTipo()].executa(evento.getEntidade());
-                                tempoSaida = this.tempoSistema + evento.getEntidade().getTempoServico();
-                                evento.getEntidade().setTempoSaida(tempoSaida);
-                                this.gerarEvento("Saida", tempoSaida , evento.getEntidade());
+                                this.servidores[evento.getEntidade().getTipo()-1].executa(evento.getEntidade());
+                                //tempoSaida = this.tempoSistema + evento.getEntidade().getTempoServico();
+                                //evento.getEntidade().setTempoSaida(tempoSaida);
+                                this.gerarEvento("Saida", evento.getEntidade().getTempoSaida() , evento.getEntidade());
                                 break;
             }
-            
+           //System.out.println("Evento tipo : " + evento.getTipo() + "Evento tempo entrada : " + evento.getTempo());
+          // this.imprimeListaEventos();
         }
     }
     
@@ -112,11 +115,13 @@ public class SimuladorControle {
     }
     
     private double gerarTEC(int EntidadeTipo){
-        return 0.0;
+        Random g = new Random();
+        return g.nextInt(50);
     }
     
     private double gerarTES(int EntidadeTipo){
-        return 0.0;
+         Random g = new Random();
+        return g.nextInt(50);
     }
     
     private void removerEventoDaLista(int index){
@@ -131,7 +136,7 @@ public class SimuladorControle {
     
     private void imprimeListaEventos(){
         for(Evento evento : this.listaEventos){
-            System.out.println("Evento" + evento.getTipo() + " Entidade" + evento.getEntidade().getTipo() + " Tempo" + evento.getTempo());
+            System.out.println("Evento :" + evento.getTipo() + " Entidade : " + evento.getEntidade().getTipo() + " Tempo : " + evento.getTempo());
         }
     }
     
